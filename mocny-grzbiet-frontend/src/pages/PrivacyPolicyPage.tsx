@@ -5,7 +5,7 @@ import { GOOGLE_LOGIN_ENABLED } from '../config/features'
 import { BUSINESS, CONTACT_EMAIL, CONTACT_PHONE } from '../config/site'
 import { PageHeader } from '../components/ui/PageHeader'
 
-const LAST_UPDATED = '13 listopada 2026'
+const LAST_UPDATED = '19 listopada 2026'
 
 /**
  * Google sign-in appears here only while {@link GOOGLE_LOGIN_ENABLED} is on. The client chose e-mail and
@@ -409,6 +409,14 @@ export function PrivacyPolicyPage() {
               description="Zaszyfrowane kopie zapasowe bazy danych i przesłanych plików przechowywane są na prywatnym, niepublicznym dysku Google Drive. Kopia obejmuje całą bazę, a więc również dane planu treningowego 1:1. Google nie ma dostępu do treści kopii — są zaszyfrowane przed wysłaniem."
             />
           </div>
+          <p className="text-surface-400 leading-relaxed mt-4">
+            W planie treningowym i w materiałach trener może pokazać filmy z YouTube. Miniatury i odtwarzacz
+            wczytują się z serwerów Google, które — jak przy każdym wyświetleniu strony — otrzymują przy tym
+            standardowe informacje techniczne, np. adres IP. Odtwarzacz działa w trybie ograniczonej
+            prywatności (youtube-nocookie.com) i włącza się dopiero po kliknięciu. Google korzysta z tych
+            informacji na zasadach opisanych w swojej polityce prywatności (policies.google.com/privacy).
+            Podstawą jest nasz uzasadniony interes: pokazanie ćwiczeń w planie (art. 6 ust. 1 lit. f RODO).
+          </p>
           <div className="mt-4 bg-surface-800/50 rounded-xl p-4">
             <p className="text-surface-200 font-medium text-sm mb-1">Przekazywanie danych poza EOG</p>
             <p className="text-surface-500 text-sm leading-relaxed">
