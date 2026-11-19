@@ -67,7 +67,7 @@ Jeśli zmiana dotyka któregoś punktu — otwórz wskazany plik **przed** pisan
 **SEO i nginx → [`API.md`](API.md)**
 - Gdy wrócą podstrony z podglądem dla botów (przepisanie na `/og/` po user-agencie w `nginx.conf`), lista botów **nigdy** nie zawiera wyszukiwarek — pętla przekierowań = „Redirect error" w Search Console. Dziś podgląd ma tylko strona główna; `seo-smoke.sh` i tak sprawdza, że Googlebot nie dostaje meta-refresh.
 - Dokładasz zewnętrzny zasób → dopisz host do CSP w `nginx.conf` **i** do sekcji 4 w `seo-smoke.sh`. Dev server Vite nie wysyła CSP, więc lokalnie nic nie pęknie.
-- Zasób ładowany z cudzego serwera (osadzenie, miniatura, widget) **widzi adres IP odwiedzającego** — dopisz go też do sekcji 7 polityki prywatności i podbij `LAST_UPDATED`. Do 19.11.2026 polityka milczała o miniaturach YouTube. Tak samo Cloudflare: w dniu przepięcia DNS trafia na listę w sekcji 7 i do akapitu o przekazywaniu poza EOG (wzór: Fire Academy, 18.11.2026).
+- Zasób ładowany z cudzego serwera (osadzenie, miniatura, widget) **widzi adres IP odwiedzającego** — dopisz go też do sekcji 7 polityki prywatności i podbij `LAST_UPDATED`. Do 19.11.2026 polityka milczała o miniaturach YouTube. Cloudflare jest w sekcji 7 i w akapicie o przekazywaniu poza EOG od 19.11.2026 — z wyprzedzeniem, bo strona ruszy już za nim; gdyby jednak startowała bez Cloudflare, wpis trzeba zdjąć.
 
 **Kalendarz 1:1 → [`DECISIONS-TRAINING.md`](DECISIONS-TRAINING.md)**
 - Zadanie i trening to **dwa wiersze** (`kind`), nigdy jedno pole na wspólnym wierszu.
@@ -332,7 +332,7 @@ Decyzja Mateusza: wyciąć od razu, a stały grafik Kacpra zaprojektować od now
 - Smoke test w Deploy czyta domenę ze zmiennej `SITE_URL`, nie z literału.
 
 ### Przed pierwszym wdrożeniem (otwarte)
-1. Domena kupiona (`mocnygrzbiet.pl`); DNS przepinamy na Cloudflare razem z serwerem — tego samego dnia Cloudflare do polityki prywatności (sekcja 7 i przekazywanie poza EOG).
+1. Domena kupiona (`mocnygrzbiet.pl`); DNS przepinamy na Cloudflare razem z serwerem (polityka prywatności już go wymienia).
 2. Dane administratora i kontakt — wpisane (08.11.2026).
 3. Treść wizytówki: tekst, zdjęcia, logo, ikony i kontakt są. Brakuje skanów certyfikatów (Kacper przyśle).
 4. Regulamin (brief klienta, pkt 6): mechanika gotowa (checkbox przy rejestracji i na `/uzupelnij-profil`,

@@ -395,6 +395,10 @@ export function PrivacyPolicyPage() {
               description="Serwer aplikacji i baza danych zlokalizowane w Europejskim Obszarze Gospodarczym."
             />
             <InfoItem
+              title="Cloudflare, Inc. (ochrona i dostarczanie strony)"
+              description="Pośredniczy w ruchu do strony i chroni ją przed atakami. Widzi przy tym m.in. adres IP odwiedzającego i adres otwieranej podstrony."
+            />
+            <InfoItem
               title="Zewnętrzny serwer poczty e-mail (SMTP)"
               description="Wykorzystywany do dostarczenia wszystkich wiadomości e-mail wysyłanych z systemu — zarówno serwisowych (zaproszenie do założenia konta, reset hasła, powiadomienia o koncie, o wiadomościach od trenera i o zmianach w planie treningowym), jak i marketingowych (po udzieleniu zgody). Dostawca nie przetwarza Twoich danych w żadnym innym celu."
             />
@@ -420,12 +424,12 @@ export function PrivacyPolicyPage() {
           <div className="mt-4 bg-surface-800/50 rounded-xl p-4">
             <p className="text-surface-200 font-medium text-sm mb-1">Przekazywanie danych poza EOG</p>
             <p className="text-surface-500 text-sm leading-relaxed">
-              Serwer i baza danych pozostają w EOG. Wyjątkiem jest współpraca z Google LLC opisana wyżej —
-              Google ma siedzibę w USA, więc w tym zakresie dane mogą być przetwarzane poza EOG. Transfer
-              odbywa się na podstawie programu EU‑US Data Privacy Framework (Google jest certyfikowany) oraz
-              standardowych klauzul umownych zatwierdzonych przez Komisję Europejską (SCC). Kopie zapasowe są
-              dodatkowo szyfrowane przed wysłaniem. Kopię stosowanych zabezpieczeń możesz uzyskać,
-              kontaktując się z nami.
+              Serwer i baza danych pozostają w EOG. Wyjątkiem jest współpraca z Google LLC i Cloudflare, Inc.
+              opisana wyżej — obie firmy mają siedzibę w USA, więc w tym zakresie dane mogą być przetwarzane
+              poza EOG. Transfer odbywa się na podstawie programu EU‑US Data Privacy Framework (obie firmy są
+              certyfikowane) oraz standardowych klauzul umownych zatwierdzonych przez Komisję Europejską
+              (SCC). Kopie zapasowe są dodatkowo szyfrowane przed wysłaniem. Kopię stosowanych zabezpieczeń
+              możesz uzyskać, kontaktując się z nami.
             </p>
           </div>
         </Section>
