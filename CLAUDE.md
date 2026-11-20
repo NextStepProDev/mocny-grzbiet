@@ -79,6 +79,7 @@ Jeśli zmiana dotyka któregoś punktu — otwórz wskazany plik **przed** pisan
 - Nowa ścieżka, którą trener zapisuje trening, woła `TrainingChangeRecorder` (`added` / `changed` / `cancelled`) — inaczej podopieczny nie dostanie maila o zmianie, a nic nie krzyknie.
 - Klasa ze `@Scheduled` **nie może** deklarować `@Transactional` na innej metodzie — samowywołanie omija proxy i adnotacja milczy. Pilnuje `SchedulerTransactionArchTest`.
 - Poszerzenie zakresu danych zdrowotnych = **nowa zgoda** (wyzerowanie `training_consent_at`), nie dopisek do listy.
+- Godzina treningu (`LocalTime`) w encji ma `@JdbcType(LocalTimeJdbcType.class)`. Bez tego `hibernate.jdbc.time_zone: UTC` zapisuje 18:00 jako 17:00 i cofa to przy odczycie — ekran się zgadza, a każdy odczyt SQL-em (eksport RODO, kolejka maili) jest o godzinę za wcześnie (znalezione w testach ręcznych 20.11.2026). Pilnuje `LocalTimeColumnArchTest`. Fire Academy ma tę samą konfigurację i pola `LocalTime` bez adnotacji (`Event`, `PersonalTraining`, `TrainingDeletion`, `TrainingSlot`; sprawdzone w kodzie 20.11.2026) — kandydat do przeniesienia, a tam z danymi produkcyjnymi poprawka wymaga też migracji przesuwającej zapisane godziny.
 
 **Prywatne notatki właściciela → [`DECISIONS-TRAINING.md`](DECISIONS-TRAINING.md)**
 - Notatka **nigdy** nie jedzie w istniejącym DTO — także jako sam `hasNote`. Typ jest nieosiągalny poza `domain/adminnote` i `api/admin/note`; pilnują tego dwa testy z przeciwnych stron.
