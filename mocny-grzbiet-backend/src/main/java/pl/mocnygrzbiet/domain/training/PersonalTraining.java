@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.LocalTimeJdbcType;
 
 /**
  * One entry in a client's 1-on-1 plan — a training or a task, told apart by {@link #getKind()}.
@@ -45,11 +47,16 @@ public class PersonalTraining {
     @Column(name = "training_date", nullable = false)
     private LocalDate date;
 
+    // A wall-clock hour, stored as entered. Without this Hibernate binds LocalTime through the
+    // hibernate.jdbc.time_zone (UTC) calendar and 18:00 lands as 17:00: invisible through the entity,
+    // an hour off for every plain SQL read (GDPR export, change-mail queue). TrainingTimeStorageIntegrationTest.
     @Column(name = "start_time")
+    @JdbcType(LocalTimeJdbcType.class)
     @Nullable
     private LocalTime startTime;
 
     @Column(name = "end_time")
+    @JdbcType(LocalTimeJdbcType.class)
     @Nullable
     private LocalTime endTime;
 
