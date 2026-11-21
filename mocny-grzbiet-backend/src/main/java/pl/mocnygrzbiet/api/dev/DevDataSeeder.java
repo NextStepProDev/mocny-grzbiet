@@ -3,6 +3,7 @@ package pl.mocnygrzbiet.api.dev;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,6 +40,9 @@ import java.util.UUID;
  * On dev the database is reset at every start anyway (FlywayConfig), so a restart gives a fresh set.
  * <p>
  * All accounts have the password <b>{@value #DEV_PASSWORD}</b>.
+ * <p>
+ * <b>Coach only</b>: {@code app.dev.seed-demo-data=false} seeds the admin accounts and nothing else, so a
+ * manual run through the test instruction sees what the coach sees on a fresh server.
  */
 @Component
 @Profile("dev")
@@ -59,12 +63,14 @@ public class DevDataSeeder implements CommandLineRunner {
     private final CoachDayOffRepository daysOff;
     private final TrainingTemplateRepository templates;
     private final JdbcTemplate jdbc;
+    private final boolean demoData;
 
     public DevDataSeeder(UserRepository users, PasswordEncoder passwordEncoder, AdminEmailConfig adminEmailConfig,
                          PersonalTrainingRepository trainings, TrainingCommentRepository comments,
                          AthleteGoalRepository goals, ExerciseVideoRepository videos,
                          AthleteMaterialRepository materials, MaterialQuestionRepository questions,
-                         CoachDayOffRepository daysOff, TrainingTemplateRepository templates, JdbcTemplate jdbc) {
+                         CoachDayOffRepository daysOff, TrainingTemplateRepository templates, JdbcTemplate jdbc,
+                         @Value("${app.dev.seed-demo-data:true}") boolean demoData) {
         this.users = users;
         this.passwordEncoder = passwordEncoder;
         this.adminEmailConfig = adminEmailConfig;
@@ -77,11 +83,18 @@ public class DevDataSeeder implements CommandLineRunner {
         this.daysOff = daysOff;
         this.templates = templates;
         this.jdbc = jdbc;
+        this.demoData = demoData;
     }
 
     @Override
     public void run(String... args) {
         @Nullable User coach = seedAdmins();
+        if (!demoData) {
+            // A fresh production server: the coach's account and nothing else. The test instruction
+            // has the tester create every client, so the roster would only collide with its addresses.
+            log.info("DEV-SEEDER: done, coach only (app.dev.seed-demo-data=false). Password: '{}'.", DEV_PASSWORD);
+            return;
+        }
 
         User ania = athlete("ania", "Ania", "Kowalska", "500100100", true);
         User kasia = athlete("kasia", "Kasia", "Nowak", "500100200", false);
