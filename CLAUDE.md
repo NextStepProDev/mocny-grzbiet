@@ -232,7 +232,9 @@ i komentarzami, przegapiony, zadanie, cel, materiał z pytaniem), **kasia** (pod
 **ola**, **lena**, **beata** (podopieczne z pustym planem), **piotr** (bez telefonu → bramka profilu),
 **marek** (zablokowany 3 dni temu). Do tego 3 filmy, szablon i dzień wolny. Seeder pisze **przez repozytoria,
 nie serwisy** — inaczej każdy restart zakolejkowałby maile o zmianach w planie. Wyłączenie resetu:
-`app.dev.reset-on-start=false`.
+`app.dev.reset-on-start=false`. **Sam trener** (`app.dev.seed-demo-data=false`, w `.env`
+`APP_DEV_SEED_DEMO_DATA=false`): seeder zakłada tylko konto admina — tak wygląda świeży serwer u Kacpra, a instrukcja
+testów każe testerowi samemu zaprosić Anię, Kasię i Olę na te same plus-adresy, które zajęłyby konta seedera.
 
 Porty wybrane tak, żeby nie kolidowały z innymi projektami w `Projects/` (Fire: 5433/8081/5174,
 abcwspinania: 5435/3000). Ten sam port Vite co gdzie indziej = Playwright testowałby cudzą aplikację
