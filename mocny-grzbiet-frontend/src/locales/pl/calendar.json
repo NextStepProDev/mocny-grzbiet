@@ -218,7 +218,7 @@
   },
   "templates": {
     "title": "Szablony treningów",
-    "subtitle": "Gotowe schematy, które wstawiasz do planu.",
+    "subtitle": "Gotowe schematy treningów. W formularzu treningu wstawiasz je przyciskiem „Wstaw z szablonu”.",
     "add": "Dodaj szablon",
     "addTitle": "Nowy szablon",
     "editTitle": "Edytuj szablon",
@@ -229,7 +229,10 @@
     "deleteTitle": "Usunąć szablon?",
     "deleteMessage": "Czy na pewno usunąć „{{title}}\"? Treningi już rozdane zostaną nietknięte.",
     "deleted": "Szablon usunięty.",
-    "empty": "Brak szablonów. Dodaj pierwszy."
+    "empty": "Brak szablonów. Dodaj pierwszy.",
+    "insert": "Wstaw z szablonu",
+    "pickTitle": "Wybierz szablon",
+    "pickEmpty": "Nie masz jeszcze szablonów. Dodasz je w panelu: Podopieczni → Szablony treningów (pod listą podopiecznych)."
   },
   "goals": {
     "title": "Cele",
