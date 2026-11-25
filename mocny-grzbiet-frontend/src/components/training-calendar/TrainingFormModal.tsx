@@ -1,15 +1,16 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
-import { Film, Link as LinkIcon, X } from 'lucide-react'
+import { Film, LayoutTemplate, Link as LinkIcon, X } from 'lucide-react'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 import { ApiError } from '../../utils/errors'
 import { VideoPickerModal } from '../exercise-videos/VideoPickerModal'
+import { TemplatePickerModal } from './TemplatePickerModal'
 import { addMonths, format, parseISO } from 'date-fns'
 import { addDaysIso, formatLongDate } from '../../utils/calendarRange'
 import { DateInput } from '../ui/DateInput'
-import type { AttachmentKind, CreateTrainingBody, PersonalTraining, TrainingKind } from '../../types'
+import type { AttachmentKind, CreateTrainingBody, PersonalTraining, TrainingKind, TrainingTemplate } from '../../types'
 import { inputClass, textareaClass } from '../../utils/fieldClass'
 import type { PartnerCandidate } from './adapter'
 
@@ -20,6 +21,8 @@ const MAX_MATERIALS = 3
 const MIN_CALORIES = 500
 const MAX_CALORIES = 10000
 
+/** The description column's limit, mirrored by the textarea's maxLength. */
+const MAX_DESCRIPTION = 2000
 
 interface TrainingFormModalProps {
   /** Present when editing, absent when creating. */
@@ -86,6 +89,21 @@ export function TrainingFormModal({
       thumbnailUrl: a.thumbnailUrl,
     })))
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false)
+  // Templates come from the coach's library, like the videos, and describe a training, not a task.
+  const offerTemplates = canAttach && !isTask
+
+  // Copied in, never linked: editing the template later must not rewrite a session already handed
+  // out. What the coach has typed stays — a title is only filled when empty, and the template's
+  // text goes under an existing description rather than over it.
+  const insertTemplate = (template: TrainingTemplate) => {
+    if (!title.trim()) setTitle(template.title)
+    if (template.description) {
+      setDescription(current => (current.trim()
+        ? `${current.trimEnd()}\n\n${template.description}`
+        : template.description!).slice(0, MAX_DESCRIPTION))
+    }
+  }
   const [linkUrl, setLinkUrl] = useState('')
 
   const submit = async (e: FormEvent) => {
@@ -220,14 +238,22 @@ export function TrainingFormModal({
         )}
 
         <div>
-          <label htmlFor="training-description" className="block text-sm text-surface-300 mb-1">
-            {t('form.description')}
-          </label>
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <label htmlFor="training-description" className="block text-sm text-surface-300">
+              {t('form.description')}
+            </label>
+            {offerTemplates && (
+              <Button type="button" variant="ghost" size="sm" onClick={() => setTemplatePickerOpen(true)}>
+                <LayoutTemplate className="h-4 w-4" />
+                {t('templates.insert')}
+              </Button>
+            )}
+          </div>
           <textarea
             id="training-description"
             className={`${textareaClass} min-h-48`}
             value={description}
-            maxLength={2000}
+            maxLength={MAX_DESCRIPTION}
             onChange={e => setDescription(e.target.value)}
           />
         </div>
@@ -404,6 +430,10 @@ export function TrainingFormModal({
           displayName: video.name, thumbnailUrl: video.thumbnailUrl,
         }])}
       />
+      )}
+
+      {templatePickerOpen && (
+        <TemplatePickerModal onClose={() => setTemplatePickerOpen(false)} onPick={insertTemplate} />
       )}
     </Modal>
   )

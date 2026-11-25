@@ -51,7 +51,11 @@ RPE 1–10 z `CHECK` wiążącym je z ukończeniem, więc cofnięcie wykonania m
   `watch?v=X`, `youtu.be/X` i `youtu.be/X?t=30` to jeden film; `search_text` bez polskich znaków,
   świadomie `LIKE` zamiast `pg_trgm` — próg wyjścia ~5000 filmów w komentarzu migracji).
 - `training_templates` (użycie **kopiuje** treść, więc edycja szablonu nie przepisuje rozdanych
-  treningów).
+  treningów). Do 25.11.2026 szablony dało się tylko zakładać — formularz treningu nie miał jak ich
+  użyć (tak samo w Fire; znalezione w testach ręcznych). Teraz trener ma tam „Wstaw z szablonu”
+  (`TemplatePickerModal`): tytuł wpada tylko do pustego pola, a treść ląduje **pod** istniejącym
+  opisem, nie zamiast niego. Panel zapisuje w szablonie tylko nazwę i treść, więc tylko to jest
+  kopiowane (`defaultDurationMinutes` i załączniki szablonu istnieją w API, ale nikt ich nie ustawia).
 - `training_attachments` (`kind` LINK/VIDEO; **`video_id` z `ON DELETE RESTRICT`** = zliczanie
   referencji po stronie bazy, film w użyciu można tylko zarchiwizować; limit 3 domknięty
   `UNIQUE (właściciel, position)` + `CHECK position ≤ 2`, nie tylko w serwisie).
