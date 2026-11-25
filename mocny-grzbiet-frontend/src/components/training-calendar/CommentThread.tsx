@@ -7,12 +7,9 @@ import { ImagePlus, Send, X } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { LoadingSpinner } from '../ui/LoadingSpinner'
 import { CommentPhoto } from './CommentPhoto'
-import { compressImage, TRAINING_PHOTO_COMPRESSION, validateImageFile } from '../../utils/imageUtils'
+import { compressImage, isHeic, PHOTO_ACCEPT, PHOTO_TYPES, TRAINING_PHOTO_COMPRESSION, validateImageFile } from '../../utils/imageUtils'
 import type { TrainingCalendarAdapter } from './adapter'
 import { SHORT_STALE_MS } from '../../utils/queryFreshness'
-
-/** Phones shoot HEIC; the canvas pass turns it into the JPEG the server expects. */
-const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
 
 /** Two people ever, so bubbles left/right carry the whole "who said this" story. */
 export function CommentThread({ trainingId, adapter }: { trainingId: string; adapter: TrainingCalendarAdapter }) {
@@ -56,7 +53,7 @@ export function CommentThread({ trainingId, adapter }: { trainingId: string; ada
     e.target.value = ''
     if (!file) return
 
-    const validationError = validateImageFile(file, ACCEPTED_TYPES)
+    const validationError = validateImageFile(file, PHOTO_TYPES)
     if (validationError) {
       setError(validationError)
       return
@@ -71,7 +68,9 @@ export function CommentThread({ trainingId, adapter }: { trainingId: string; ada
       setPhoto(compressed)
       setPhotoPreview(URL.createObjectURL(compressed))
     } catch {
-      setError(t('comments.photoUnreadable'))
+      // Phones shoot HEIC; the canvas pass turns it into the JPEG the server expects, but only in
+      // a browser that can decode it. Where it cannot, the message has to say what to do instead.
+      setError(t(isHeic(file) ? 'comments.photoUnreadableHeic' : 'comments.photoUnreadable'))
     }
   }
 
@@ -156,7 +155,7 @@ export function CommentThread({ trainingId, adapter }: { trainingId: string; ada
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept={PHOTO_ACCEPT}
               className="hidden"
               onChange={pickPhoto}
             />

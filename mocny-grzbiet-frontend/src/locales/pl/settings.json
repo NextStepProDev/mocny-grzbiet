@@ -6,7 +6,7 @@
     "upload": "Dodaj zdjęcie",
     "change": "Zmień zdjęcie",
     "remove": "Usuń zdjęcie",
-    "formatHint": "JPG, PNG lub WebP. Zdjęcie wykadrujesz w kółku.",
+    "formatHint": "JPG, PNG, WebP albo zdjęcie z iPhone’a (HEIC). Zdjęcie wykadrujesz w kółku.",
     "cropTitle": "Wykadruj zdjęcie",
     "cropHint": "Przeciągnij zdjęcie, aby je ustawić, i przybliż suwakiem. Tak skadrowany avatar zostanie zapisany.",
     "zoom": "Przybliżenie",
@@ -15,7 +15,8 @@
     "save": "Zapisz zdjęcie",
     "saved": "Zdjęcie profilowe zaktualizowane",
     "removed": "Zdjęcie profilowe usunięte",
-    "invalidType": "Wybierz plik obrazu (JPG, PNG lub WebP)"
+    "invalidType": "Wybierz plik obrazu (JPG, PNG, WebP albo HEIC z iPhone’a)",
+    "unreadableHeic": "Ta przeglądarka nie otwiera zdjęć z iPhone’a (HEIC). Dodaj zdjęcie z telefonu albo w Safari, albo ustaw w iPhonie: Ustawienia → Aparat → Formaty → „Najbardziej zgodne”."
   },
   "profile": {
     "title": "Profil",

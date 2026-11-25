@@ -7,13 +7,50 @@ const COMPRESS_THRESHOLD = 2 * 1024 * 1024 // 2 MB
 
 const DEFAULT_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
+/**
+ * Photos people take: everything the canvas pass can turn into a JPEG, iPhone HEIC included. HEIC
+ * never reaches the server (the JVM has no decoder) — the browser decodes it, which Safari on
+ * macOS and iOS does and desktop Chrome and Firefox do not.
+ */
+export const PHOTO_TYPES = [...DEFAULT_TYPES, 'image/heic', 'image/heif']
+
+/**
+ * The picker's `accept` for photos. The extensions are there because a browser that knows no MIME
+ * type for HEIC would otherwise grey an iPhone photo out in the file dialog.
+ */
+export const PHOTO_ACCEPT = 'image/*,.heic,.heif'
+
+/**
+ * The file's MIME type, falling back to its extension: desktop Chrome on a `.heic` from Finder, and
+ * iOS now and then, report an empty type.
+ */
+export function imageTypeOf(file: File): string {
+  if (file.type) return file.type
+  switch (file.name.toLowerCase().split('.').pop()) {
+    case 'heic': return 'image/heic'
+    case 'heif': return 'image/heif'
+    case 'jpg':
+    case 'jpeg': return 'image/jpeg'
+    case 'png': return 'image/png'
+    case 'webp': return 'image/webp'
+    default: return ''
+  }
+}
+
+export function isHeic(file: File): boolean {
+  const type = imageTypeOf(file)
+  return type === 'image/heic' || type === 'image/heif'
+}
+
 export function validateImageFile(file: File, allowedTypes: string[] = DEFAULT_TYPES): string | null {
   if (file.size > MAX_FILE_SIZE) {
     const sizeMB = (file.size / (1024 * 1024)).toFixed(1)
     return `Plik jest za duży (${sizeMB} MB). Maksymalny rozmiar to 50 MB.`
   }
-  if (!allowedTypes.includes(file.type)) {
-    return 'Niedozwolony format pliku. Dozwolone: JPG, PNG, WebP.'
+  if (!allowedTypes.includes(imageTypeOf(file))) {
+    return allowedTypes.includes('image/heic')
+      ? 'Niedozwolony format pliku. Dozwolone: JPG, PNG, WebP, HEIC (zdjęcie z iPhone’a).'
+      : 'Niedozwolony format pliku. Dozwolone: JPG, PNG, WebP.'
   }
   return null
 }
@@ -98,7 +135,10 @@ export async function compressImage(file: File, options: CompressOptions = {}): 
       canvas.toBlob(
         blob => {
           if (!blob) {
-            resolve(file)
+            // Under `force` the original is what must not be sent (a HEIC, or a photo with its
+            // EXIF still in it), so a failed encode is a failure, not a fallback.
+            if (force) reject(new Error('Nie udało się przetworzyć obrazu'))
+            else resolve(file)
             return
           }
           // Keep the smaller of the two — never "compress" a file into a bigger one. Skipped under

@@ -137,7 +137,8 @@
     "photoPreviewTitle": "Podgląd zdjęcia",
     "photoExpires": "Zdjęcie zniknie {{date}}",
     "photoUnavailable": "Nie udało się wczytać zdjęcia. Mogło już zostać usunięte.",
-    "photoUnreadable": "Nie udało się odczytać tego pliku. Wybierz zdjęcie w formacie JPG, PNG lub HEIC.",
+    "photoUnreadable": "Nie udało się odczytać tego pliku. Wybierz zdjęcie w formacie JPG lub PNG.",
+    "photoUnreadableHeic": "Ta przeglądarka nie otwiera zdjęć z iPhone’a (HEIC). Dodaj zdjęcie z telefonu albo w Safari, albo ustaw w iPhonie: Ustawienia → Aparat → Formaty → „Najbardziej zgodne”.",
     "photoDelete": "Usuń zdjęcie",
     "photoDeleteCancel": "Zostaw",
     "photoDeleteConfirm": "Usunąć na stałe?"
