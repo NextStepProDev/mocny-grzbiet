@@ -33,15 +33,16 @@ export function TrainingCalendar({ adapter }: { adapter: TrainingCalendarAdapter
   const queryClient = useQueryClient()
   const { entry: clipboard, copy, clear: clearClipboard } = useTrainingClipboard()
 
-  // The month view swaps component below the sm breakpoint rather than restyling: at phone width a
+  // The month view swaps component below the lg breakpoint rather than restyling: at that width a
   // day cell can hold a dot, not a card, so the content moves into a sheet behind a tap.
   const compactViewport = useCompactViewport()
 
-  // The calendar opens on the month everywhere. On a wide screen planning happens in blocks longer
-  // than a week; on a phone the month is the dot grid, the whole plan at a glance with today marked,
-  // and a day's trainings one tap away in its sheet. (The phone used to open on the week so that
-  // "what am I doing today" needed no tap — the owner chose the overview instead, 2026-11-01.)
-  const [view, setView] = useState<CalendarView>('month')
+  // A computer opens on the month: planning happens in blocks longer than a week, and seven columns
+  // carry the cards. A phone or tablet opens on the week, so "what am I doing" needs no tap — its
+  // month is a dot grid that hides every card behind one. Mateusz's call, 25.11.2026 in manual
+  // testing (from 01.11.2026 every screen had opened on the month). Decided once, at mount: turning
+  // the tablet must not throw away the view someone picked.
+  const [view, setView] = useState<CalendarView>(() => (compactViewport ? 'week' : 'month'))
 
   const [anchor, setAnchor] = useState(todayIso())
   const [formDate, setFormDate] = useState<string | null>(null)

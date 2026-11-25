@@ -86,8 +86,8 @@ function renderCalendar(adapter: TrainingCalendarAdapter) {
 }
 
 /**
- * Renders, then switches to the week view. The calendar opens on the month, whose cells are compact:
- * no clipboard controls and no kcal/RPE badges, both by design at that size. Anything asserting on a
+ * Renders, then switches to the week view. On a computer the calendar opens on the month, whose cells
+ * are compact: no clipboard controls and no RPE badge, both by design at that size. Anything asserting on a
  * card's full contents has to say so by asking for the week.
  */
 async function renderWeek(adapter: TrainingCalendarAdapter) {
@@ -140,7 +140,9 @@ describe('TrainingCalendar', () => {
   it('says the day is off in the phone month cell\'s name', async () => {
     mockCompactViewport()
     const dayOff = { id: 'd1', startDate: TODAY, endDate: TODAY, note: null }
+    const user = userEvent.setup()
     renderCalendar(stubAdapter([], {}, [], [dayOff]))
+    await user.click(await screen.findByRole('button', { name: 'Miesiąc' }))
 
     expect(await screen.findByRole('button', {
       name: `Pokaż dzień ${formatLongDate(TODAY)}, Trener ma wolne`,
@@ -153,20 +155,27 @@ describe('TrainingCalendar', () => {
     await waitFor(() => expect(screen.getAllByRole('button', { name: /^Dodaj trening/ })).toHaveLength(42))
   })
 
-  it('opens on the month dot grid on a phone, and the week is one tap away', async () => {
-    // The phone used to open on the week so that "what am I doing today" needed no tap. The owner
-    // chose the month instead (2026-11-01): the whole plan at a glance, today marked in the grid,
-    // a day's trainings one tap away in its sheet.
+  it('opens on the week on a phone, and the month is one tap away', async () => {
+    // Mateusz, 25.11.2026, in manual testing: on a phone the week, so "what am I doing" needs no tap;
+    // on a computer the month. (From 01.11.2026 every screen opened on the month.)
     mockCompactViewport()
     const user = userEvent.setup()
 
     renderCalendar(stubAdapter([training()]))
 
-    await waitFor(() => expect(screen.getAllByRole('button', { name: /^Pokaż dzień/ })).toHaveLength(42))
-
-    await user.click(screen.getByRole('button', { name: 'Tydzień' }))
     await waitFor(() => expect(screen.getAllByRole('button', { name: /^Dodaj trening/ })).toHaveLength(7))
     await screen.findByText('Siła')
+
+    await user.click(screen.getByRole('button', { name: 'Miesiąc' }))
+    await waitFor(() => expect(screen.getAllByRole('button', { name: /^Pokaż dzień/ })).toHaveLength(42))
+  })
+
+  it('shows a task\'s calorie limit on the month card too', async () => {
+    // Found in manual testing: the month is the view the computer opens on, and a task there showed
+    // nothing of its limit — the coach saw an icon and had to open it to learn what it asked.
+    renderCalendar(stubAdapter([training({ kind: 'TASK', title: 'Limit kalorii', targetCalories: 2200 })]))
+
+    expect(await screen.findByText('≤ 2200 kcal')).toBeInTheDocument()
   })
 
   it.each([768, 834, 1023])('treats a %ipx tablet as narrow, not as a small desktop', async width => {
@@ -178,12 +187,12 @@ describe('TrainingCalendar', () => {
     const user = userEvent.setup()
     renderCalendar(stubAdapter([training()]))
 
-    // The month is the dot grid with its day sheet, exactly as on a phone
-    await waitFor(() => expect(screen.getAllByRole('button', { name: /^Pokaż dzień/ })).toHaveLength(42))
-
-    // And the week stacks into full-width rows: seven day headers, no seven-column grid
-    await user.click(screen.getByRole('button', { name: 'Tydzień' }))
+    // Opens like a phone: the week, stacked into full-width rows, seven day headers
     await waitFor(() => expect(screen.getAllByRole('button', { name: /^Dodaj trening/ })).toHaveLength(7))
+
+    // And the month is the dot grid with its day sheet, exactly as on a phone
+    await user.click(screen.getByRole('button', { name: 'Miesiąc' }))
+    await waitFor(() => expect(screen.getAllByRole('button', { name: /^Pokaż dzień/ })).toHaveLength(42))
   })
 
   it('keeps the seven-column grid from 1024px up', async () => {

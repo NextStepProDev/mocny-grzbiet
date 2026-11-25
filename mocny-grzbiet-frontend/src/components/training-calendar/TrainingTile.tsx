@@ -71,13 +71,15 @@ export function TrainingTile({
       className={clsx(
         // Named group: the day column around this card carries one too, and an unnamed `group-hover`
         // would match either of them — the day's hover must not speak for every card standing in it.
-        'group/tile relative w-full rounded-xl border border-white/[0.07] border-l-2 text-left',
-        'transition-colors hover:border-white/25',
+        'group/tile relative w-full rounded-xl border border-l-2 text-left',
+        'transition-colors',
         statusBorder[training.status],
         training.status === 'MISSED' ? 'bg-transparent' : 'bg-surface-850',
-        // A dashed outline for tasks. The left border still carries the status, so the two say
-        // different things and neither has to give up its edge to the other.
-        isTask && 'border-dashed',
+        // A dashed outline for tasks, bright enough to see: at the cards' usual 7% white the dashes
+        // vanished (found in manual testing). The left border still carries the status, so the two
+        // say different things and neither has to give up its edge to the other.
+        // One colour class or the other, never both: two would be settled by stylesheet order.
+        isTask ? 'border-dashed border-white/30 hover:border-white/50' : 'border-white/[0.07] hover:border-white/25',
         cut && 'opacity-50',
         compact ? 'px-1.5 py-1' : 'px-3 py-2.5',
       )}
@@ -140,6 +142,13 @@ export function TrainingTile({
           <span className="mt-0.5 flex items-center gap-1 text-xs text-surface-300">
             <Users aria-hidden="true" className="h-3 w-3 shrink-0" />
             <span className="truncate">{partners.join(', ')}</span>
+          </span>
+        )}
+        {/* A month card has room for one chip and it is the limit: without it a task there is an
+            icon and a title, and the coach opens it to learn what it asks (manual testing). */}
+        {compact && training.targetCalories != null && (
+          <span title={caloriesLabel} className="mt-0.5 block truncate text-[11px] text-surface-300">
+            ≤ {training.targetCalories} kcal
           </span>
         )}
         {!compact && (training.rpe != null || training.targetCalories != null || training.commentCount > 0) && (
