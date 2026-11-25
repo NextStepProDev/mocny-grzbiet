@@ -330,8 +330,12 @@ intensywności: trzy stopnie jasności zamiast zielony–żółty–czerwony. Ko
 ostrzeżeń i błędów (sygnał przetrenowania, komunikaty `rose`). Zielony i czerwony obok siebie nie są
 czytelne dla części osób z daltonizmem, a strona jest czarno-biała z założenia klienta. Mapa aktywności
 pilnuje swojego odpowiednika: `heatmapScale.test.ts` sprawdza, że dzień z treningiem nie zlewa się z tłem.
-Kalendarz otwiera się na **miesiącu** na każdym ekranie (na telefonie i tablecie to siatka z kropkami),
-decyzja Mateusza z 01.11.2026 — wcześniej telefon startował na tygodniu.
+Kalendarz otwiera się na **miesiącu na komputerze**, a na **tygodniu na telefonie i tablecie** (poniżej
+1024 px, `useCompactViewport`; miesiąc to tam siatka z kropkami, która chowa każdy kafelek za dotknięciem).
+Decyzja Mateusza z 25.11.2026, z testów ręcznych; od 01.11.2026 każdy ekran startował na miesiącu, a jeszcze
+wcześniej telefon na tygodniu. Widok wybiera się raz, przy otwarciu — obrót tabletu go nie przestawia.
+Zadanie ma przerywaną ramkę w 30% bieli (przy 7%, jak reszta kafelków, kreski znikały) i limit kalorii
+także na kafelku w miesiącu.
 
 **Zadanie i trening to dwa wiersze, nigdy jeden.** Kuszące jest dopięcie „limitu kcal" jako pola do treningu — jedno okno, jedno odhaczenie. Wtedy dzień, w którym trening wyszedł, a dieta nie, nie ma jak się zapisać: cokolwiek pokaże checkbox, będzie kłamstwem o połowie dnia. Stąd `kind` na wierszu, dwa kafelki w dniu i dwa niezależne odhaczenia. `kind` jest ustawiany przy tworzeniu i nie ma go w `UpdateTrainingRequest` — przełączenie odhaczonego treningu na zadanie musiałoby po cichu skasować RPE, żeby wiersz przeszedł CHECK-i. Zadanie odhacza się bez RPE (walidacja zależy od wiersza, więc siedzi w serwisie, nie w adnotacji), a statystyki treningowe zadań nie widzą — mają własny blok `tasks`.
 
