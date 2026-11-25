@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { Avatar } from '../components/ui/Avatar'
 import { AvatarCropper } from '../components/ui/AvatarCropper'
+import { compressImage, imageTypeOf, isHeic, PHOTO_ACCEPT } from '../utils/imageUtils'
 import { PasswordStrengthMeter } from '../components/ui/PasswordStrengthMeter'
 import { inputClassMuted as inputClass } from '../utils/fieldClass'
 import { isValidPhone, normalizePhone } from '../utils/phone'
@@ -48,15 +49,27 @@ export function SettingsPage() {
   const [cropSrc, setCropSrc] = useState<string | null>(null)
   const [avatarRemoving, setAvatarRemoving] = useState(false)
 
-  const handleAvatarFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = '' // allow selecting the same file again
     if (!file) return
-    if (!file.type.startsWith('image/')) {
+    // By extension too: desktop Chrome reports an iPhone's `.heic` with no type at all.
+    if (!imageTypeOf(file).startsWith('image/')) {
       showToast(t('avatar.invalidType'), 'error')
       return
     }
-    setCropSrc(URL.createObjectURL(file))
+    let source: Blob = file
+    if (isHeic(file)) {
+      // Decoded up front: Safari reads HEIC, desktop Chrome and Firefox do not, and the cropper
+      // would open on an empty square with nothing to say why.
+      try {
+        source = await compressImage(file, { mimeType: 'image/jpeg', force: true })
+      } catch {
+        showToast(t('avatar.unreadableHeic'), 'error')
+        return
+      }
+    }
+    setCropSrc(URL.createObjectURL(source))
   }
 
   const closeCropper = () => {
@@ -239,7 +252,7 @@ export function SettingsPage() {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept={PHOTO_ACCEPT}
           onChange={handleAvatarFileChange}
           className="hidden"
         />

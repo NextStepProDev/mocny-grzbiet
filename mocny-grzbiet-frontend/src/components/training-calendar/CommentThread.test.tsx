@@ -20,6 +20,8 @@ const tMap: Record<string, string> = {
   'comments.photoDelete': 'Usuń zdjęcie',
   'comments.photoHint': 'Nie wysyłaj cudzych danych.',
   'comments.deletedAuthor': 'Konto usunięte',
+  'comments.photoUnreadable': 'Nie udało się odczytać tego pliku.',
+  'comments.photoUnreadableHeic': 'Ta przeglądarka nie otwiera zdjęć z iPhone’a (HEIC).',
 }
 
 vi.mock('react-i18next', () => ({
@@ -160,6 +162,40 @@ describe('CommentThread', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument()
     expect(screen.queryByText('Zdjęcie gotowe do wysłania')).not.toBeInTheDocument()
     expect(adapter.addComment).not.toHaveBeenCalled()
+  })
+
+  /**
+   * Found in manual testing: a photo straight off an iPhone. Desktop Chrome (and iOS, now and then)
+   * reports a `.heic` with no MIME type at all, so the picker greyed it out and validation refused
+   * it as "not JPG, PNG, WebP" — the photo the feature exists for.
+   */
+  it('should take an iPhone photo whose browser reports no file type', async () => {
+    const adapter = stubAdapter([])
+    const { container } = renderThread(adapter)
+    const user = userEvent.setup()
+
+    await user.upload(container.querySelector('input[type="file"]') as HTMLInputElement,
+      new File([new ArrayBuffer(300_000)], 'IMG_0412.HEIC', { type: '' }))
+
+    expect(await screen.findByText('Zdjęcie gotowe do wysłania')).toBeInTheDocument()
+  })
+
+  /** Chrome and Firefox on a computer cannot decode HEIC: say so, rather than "use HEIC". */
+  it('should explain an iPhone photo this browser cannot open', async () => {
+    vi.stubGlobal('Image', class {
+      onload: (() => void) | null = null
+      onerror: (() => void) | null = null
+      set src(_v: string) { queueMicrotask(() => this.onerror?.()) }
+      get src() { return 'blob:stub' }
+    })
+    const adapter = stubAdapter([])
+    const { container } = renderThread(adapter)
+    const user = userEvent.setup()
+
+    await user.upload(container.querySelector('input[type="file"]') as HTMLInputElement,
+      new File([new ArrayBuffer(300_000)], 'IMG_0412.heic', { type: 'image/heic' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('HEIC')
   })
 
   it('should show the failure inline next to the button', async () => {

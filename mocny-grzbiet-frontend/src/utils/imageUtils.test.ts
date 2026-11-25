@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { compressImage, TRAINING_PHOTO_COMPRESSION, validateImageFile } from './imageUtils'
+import { compressImage, isHeic, PHOTO_TYPES, TRAINING_PHOTO_COMPRESSION, validateImageFile } from './imageUtils'
 
 function createFile(name: string, size: number, type: string): File {
   const buffer = new ArrayBuffer(size)
@@ -75,6 +75,24 @@ describe('validateImageFile', () => {
 
     expect(validateImageFile(file)).not.toBeNull()
     expect(validateImageFile(file, ['image/jpeg', 'image/heic'])).toBeNull()
+  })
+})
+
+describe('iPhone photos (HEIC)', () => {
+  it('should recognise a HEIC by its extension when the browser gives no type', () => {
+    // Desktop Chrome on a .heic from Finder, and iOS now and then, report an empty MIME type.
+    expect(isHeic(createFile('IMG_0412.HEIC', 1024, ''))).toBe(true)
+    expect(isHeic(createFile('IMG_0412.heif', 1024, ''))).toBe(true)
+    expect(isHeic(createFile('photo.jpg', 1024, ''))).toBe(false)
+  })
+
+  it('should accept a typeless HEIC where photos are taken', () => {
+    expect(validateImageFile(createFile('IMG_0412.heic', 1024, ''), PHOTO_TYPES)).toBeNull()
+  })
+
+  it('should name HEIC in the refusal where it is accepted', () => {
+    // The message used to say "JPG, PNG, WebP" on a picker that takes iPhone photos.
+    expect(validateImageFile(createFile('anim.gif', 1024, 'image/gif'), PHOTO_TYPES)).toContain('HEIC')
   })
 })
 
@@ -155,6 +173,14 @@ describe('compressImage', () => {
     expect(toBlobCalls).toHaveLength(1)
     expect(result.type).toBe('image/jpeg')
     expect(result.size).toBe(blobSize)
+  })
+
+  it('should fail rather than hand back the original when a forced encode fails', async () => {
+    // The original is exactly what must not go out: a HEIC the server cannot read, or EXIF intact.
+    HTMLCanvasElement.prototype.toBlob = function (callback: BlobCallback) { callback(null) }
+
+    await expect(compressImage(createFile('IMG_0412.heic', 80 * 1024, 'image/heic'), TRAINING_PHOTO_COMPRESSION))
+      .rejects.toThrow()
   })
 
   it('should leave a small file alone by default', async () => {
