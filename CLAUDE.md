@@ -117,7 +117,7 @@ Jeśli zmiana dotyka któregoś punktu — otwórz wskazany plik **przed** pisan
 Dokładne wersje: `mocny-grzbiet-backend/build.gradle` i `mocny-grzbiet-frontend/package.json` — nie
 powielać ich tutaj, Dependabot rusza je co tydzień.
 
-- **Backend:** Java 25 · Spring Boot 4.1 · Spring Security 7 + JWT (jjwt) · Spring Data JPA ·
+- **Backend:** Java 25 · Spring Boot 4.2 · Spring Security 7 + JWT (jjwt) · Spring Data JPA ·
   **PostgreSQL 18** · Flyway · Spring Mail · Actuator · JSpecify (`@NullMarked`) · springdoc-openapi ·
   Testcontainers + JUnit 5 · Caffeine (wyłącznie programowo: limity, cache filtra JWT — bez Spring Cache).
 - **Frontend:** React 19 · TypeScript 6 · Vite 8 · Tailwind 4 · TanStack Query 5 · React Router 7 ·

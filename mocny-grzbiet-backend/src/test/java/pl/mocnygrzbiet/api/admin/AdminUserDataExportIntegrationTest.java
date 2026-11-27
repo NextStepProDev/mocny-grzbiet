@@ -1,7 +1,5 @@
 package pl.mocnygrzbiet.api.admin;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,8 @@ import pl.mocnygrzbiet.domain.user.User;
 import pl.mocnygrzbiet.domain.user.UserRole;
 import pl.mocnygrzbiet.infrastructure.storage.FileStorageService;
 import pl.mocnygrzbiet.infrastructure.storage.StorePolicy;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -146,21 +146,21 @@ class AdminUserDataExportIntegrationTest extends BaseIntegrationTest {
 
         String raw = new String(zip.get("dane.json"), StandardCharsets.UTF_8);
         JsonNode data = JSON.readTree(raw);
-        assertEquals("marek@mocnygrzbiet.test", data.at("/profil/email").asText());
+        assertEquals("marek@mocnygrzbiet.test", data.at("/profil/email").asString());
         assertFalse(data.at("/zgody/zgoda_na_dane_zdrowotne").isNull());
         // Acceptance of the terms is part of what the person agreed to — it leaves with their data.
         assertTrue(data.at("/zgody").has("regulamin_zaakceptowany"));
 
         JsonNode trainings = data.at("/plan_1na1/treningi_i_zadania");
         assertEquals(1, trainings.size());
-        assertEquals("Sparing Marka", trainings.at("/0/tytul").asText());
+        assertEquals("Sparing Marka", trainings.at("/0/tytul").asString());
         assertEquals(2, trainings.at("/0/komentarze").size());
         assertEquals(1, data.at("/plan_1na1/cele").size());
-        assertEquals("Martwy ciąg 100 kg", data.at("/plan_1na1/cele/0/tresc").asText());
+        assertEquals("Martwy ciąg 100 kg", data.at("/plan_1na1/cele/0/tresc").asString());
 
         assertEquals(1, data.at("/plan_1na1/materialy").size());
-        assertEquals("Rozciaganie Marka", data.at("/plan_1na1/materialy/0/tytul").asText());
-        assertEquals("ile serii?", data.at("/plan_1na1/materialy/0/pytania/0/tresc").asText());
+        assertEquals("Rozciaganie Marka", data.at("/plan_1na1/materialy/0/tytul").asString());
+        assertEquals("ile serii?", data.at("/plan_1na1/materialy/0/pytania/0/tresc").asString());
 
         assertEquals(1, data.at("/notatki_trenera").size());
         assertTrue(raw.contains("notatka o treningu Marka"));
